@@ -642,6 +642,7 @@ static const char **item_name_ptr (MIR_item_t item) {
   case MIR_expr_data_item: return &item->u.expr_data->name;
   default: mir_assert (FALSE);
   }
+  return NULL;
 }
 
 const char *MIR_item_name (MIR_context_t ctx, MIR_item_t item) { return *item_name_ptr (item); }
@@ -1519,7 +1520,7 @@ static reg_desc_t *find_rd_by_name (MIR_context_t ctx MIR_UNUSED, const char *na
                                     MIR_func_t func) {
   func_regs_t func_regs = func->internal;
   size_t rdn, temp_rdn;
-  reg_desc_t rd;
+  reg_desc_t rd = {MIR_T_I64, 0, NULL, NULL};
 
   rd.name = (char *) name;
   rd.type = MIR_T_I64;
@@ -1537,7 +1538,7 @@ static reg_desc_t *find_rd_by_name (MIR_context_t ctx MIR_UNUSED, const char *na
 static reg_desc_t *find_rd_by_reg (MIR_context_t ctx, MIR_reg_t reg, MIR_func_t func) {
   func_regs_t func_regs = func->internal;
   size_t rdn, temp_rdn;
-  reg_desc_t rd;
+  reg_desc_t rd = {MIR_T_I64, 0, NULL, NULL};
 
   rd.reg = reg;
   rd.name = NULL;
@@ -6272,7 +6273,7 @@ static MIR_label_t create_label_desc (MIR_context_t ctx, const char *name, int d
 static int func_reg_p (MIR_context_t ctx MIR_UNUSED, MIR_func_t func, const char *name) {
   func_regs_t func_regs = func->internal;
   size_t rdn, tab_rdn;
-  reg_desc_t rd;
+  reg_desc_t rd = {MIR_T_I64, 0, NULL, NULL};
   int res;
 
   rd.name = (char *) name;
