@@ -1002,6 +1002,9 @@ static void target_machinize (gen_ctx_t gen_ctx) {
       gen_mov (gen_ctx, insn, MIR_MOV, treg_op, MIR_new_int_op (ctx, fp_offset));
       gen_mov (gen_ctx, insn, MIR_MOV,
                _MIR_new_var_mem_op (ctx, MIR_T_U32, 28, va_reg, MIR_NON_VAR, 1), treg_op);
+#else
+      (void) gp_offset; /* stored by the non-Apple ABI only */
+      (void) fp_offset;
 #endif
       /* __stack: prev_sp = mem64[fp + 16] */
       gen_mov (gen_ctx, insn, MIR_MOV, prev_sp_op,

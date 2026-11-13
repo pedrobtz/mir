@@ -878,7 +878,6 @@ static edge_t find_edge (bb_t src, bb_t dst) {
 }
 
 static void delete_bb (gen_ctx_t gen_ctx, bb_t bb) {
-  MIR_alloc_t alloc = gen_alloc (gen_ctx);
   edge_t e, next_e;
 
   for (e = DLIST_HEAD (out_edge_t, bb->out_edges); e != NULL; e = next_e) {
