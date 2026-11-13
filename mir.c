@@ -4348,12 +4348,12 @@ MIR_item_t _MIR_builtin_func (MIR_context_t ctx, MIR_module_t module, const char
 #include <sys/mman.h>
 #include <unistd.h>
 
-static size_t mem_page_size () { return sysconf (_SC_PAGE_SIZE); }
+static size_t mem_page_size (void) { return sysconf (_SC_PAGE_SIZE); }
 #else
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-static size_t mem_page_size () {
+static size_t mem_page_size (void) {
   SYSTEM_INFO sysInfo;
   GetSystemInfo (&sysInfo);
   return sysInfo.dwPageSize;
