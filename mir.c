@@ -879,6 +879,11 @@ static void remove_all_modules (MIR_context_t ctx) {
 }
 
 void MIR_finish (MIR_context_t ctx) {
+  /* An error handler may longjmp out of MIR_finish_func or
+     MIR_finish_module, leaving them set. Finishing such a context must free
+     it, not read the freed function's name and report an error again. */
+  curr_func = NULL;
+  curr_module = NULL;
   interp_finish (ctx);
   remove_all_modules (ctx);
   HTAB_DESTROY (MIR_item_t, module_item_tab);
