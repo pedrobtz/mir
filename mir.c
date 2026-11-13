@@ -741,8 +741,7 @@ MIR_context_t _MIR_init (MIR_alloc_t alloc, MIR_code_alloc_t code_alloc) {
   if (code_alloc == NULL) code_alloc = &default_code_alloc;
 
   mir_assert (MIR_OP_BOUND < OUT_FLAG);
-  if ((ctx = MIR_malloc (alloc, sizeof (struct MIR_context))) == NULL)
-    default_error (MIR_alloc_error, "Not enough memory for ctx");
+  if ((ctx = MIR_malloc (alloc, sizeof (struct MIR_context))) == NULL) return NULL;
   ctx->string_ctx = NULL;
   ctx->alias_ctx = NULL;
   ctx->reg_ctx = NULL;
