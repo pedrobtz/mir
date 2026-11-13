@@ -5,16 +5,16 @@
 #include "mir.h"
 #include "mir-code-alloc.h"
 
-DEF_VARR (MIR_insn_t);
-DEF_VARR (MIR_reg_t);
-DEF_VARR (MIR_op_t);
-DEF_VARR (MIR_type_t);
-DEF_HTAB (MIR_item_t);
-DEF_VARR (MIR_module_t);
-DEF_VARR (size_t);
-DEF_VARR (char);
-DEF_VARR (uint8_t);
-DEF_VARR (MIR_proto_t);
+DEF_VARR (MIR_insn_t)
+DEF_VARR (MIR_reg_t)
+DEF_VARR (MIR_op_t)
+DEF_VARR (MIR_type_t)
+DEF_HTAB (MIR_item_t)
+DEF_VARR (MIR_module_t)
+DEF_VARR (size_t)
+DEF_VARR (char)
+DEF_VARR (uint8_t)
+DEF_VARR (MIR_proto_t)
 
 struct gen_ctx;
 struct c2mir_ctx;
@@ -373,8 +373,8 @@ typedef struct string {
   MIR_str_t str;
 } string_t;
 
-DEF_VARR (string_t);
-DEF_HTAB (string_t);
+DEF_VARR (string_t)
+DEF_HTAB (string_t)
 
 struct string_ctx {
   VARR (string_t) * strings;
@@ -474,9 +474,9 @@ typedef struct reg_desc {
   char *hard_reg_name; /* NULL unless tied global, key for hrn2rdn */
 } reg_desc_t;
 
-DEF_VARR (reg_desc_t);
+DEF_VARR (reg_desc_t)
 
-DEF_HTAB (size_t);
+DEF_HTAB (size_t)
 
 typedef struct func_regs {
   VARR (reg_desc_t) * reg_descs;
@@ -3210,7 +3210,7 @@ typedef struct {
   MIR_reg_t reg;
 } val_t;
 
-DEF_HTAB (val_t);
+DEF_HTAB (val_t)
 
 struct simplify_ctx {
   HTAB (val_t) * val_tab;
@@ -4366,7 +4366,7 @@ struct code_holder {
 
 typedef struct code_holder code_holder_t;
 
-DEF_VARR (code_holder_t);
+DEF_VARR (code_holder_t)
 
 struct machine_code_ctx {
   VARR (code_holder_t) * code_holders;
@@ -4628,9 +4628,9 @@ typedef enum {
 
 static const int CURR_BIN_VERSION = 1;
 
-DEF_VARR (MIR_str_t);
-DEF_VARR (uint64_t);
-DEF_VARR (MIR_label_t);
+DEF_VARR (MIR_str_t)
+DEF_VARR (uint64_t)
+DEF_VARR (MIR_label_t)
 
 struct io_ctx {
   FILE *io_file;
@@ -5945,9 +5945,9 @@ typedef struct token {
   } u;
 } token_t;
 
-DEF_HTAB (insn_name_t);
+DEF_HTAB (insn_name_t)
 typedef const char *label_name_t;
-DEF_VARR (label_name_t);
+DEF_VARR (label_name_t)
 
 typedef struct label_desc {
   int def_p;
@@ -5955,7 +5955,7 @@ typedef struct label_desc {
   MIR_label_t label;
 } label_desc_t;
 
-DEF_HTAB (label_desc_t);
+DEF_HTAB (label_desc_t)
 
 struct scan_ctx {
   jmp_buf error_jmp_buf; /* keep it here to provide malloc alignment */
@@ -6993,7 +6993,7 @@ struct hard_reg_desc {
 };
 typedef struct hard_reg_desc hard_reg_desc_t;
 
-DEF_HTAB (hard_reg_desc_t);
+DEF_HTAB (hard_reg_desc_t)
 
 struct hard_reg_ctx {
   HTAB (hard_reg_desc_t) * hard_reg_desc_tab;

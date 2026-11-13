@@ -39,7 +39,7 @@ static inline void mir_bitmap_assert_fail (const char *op) {
 
 typedef uint64_t bitmap_el_t;
 
-DEF_VARR (bitmap_el_t);
+DEF_VARR (bitmap_el_t)
 
 typedef VARR (bitmap_el_t) * bitmap_t;
 typedef const VARR (bitmap_el_t) * const_bitmap_t;

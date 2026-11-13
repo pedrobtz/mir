@@ -82,7 +82,7 @@ struct insn_pattern_info {
 };
 
 typedef struct insn_pattern_info insn_pattern_info_t;
-DEF_VARR (insn_pattern_info_t);
+DEF_VARR (insn_pattern_info_t)
 
 struct const_ref {
   size_t insn_pc;      /* where rel32 address should be in code */
@@ -91,7 +91,7 @@ struct const_ref {
 };
 
 typedef struct const_ref const_ref_t;
-DEF_VARR (const_ref_t);
+DEF_VARR (const_ref_t)
 struct label_ref {
   int abs_addr_p;
   size_t label_val_disp;
@@ -102,7 +102,7 @@ struct label_ref {
 };
 
 typedef struct label_ref label_ref_t;
-DEF_VARR (label_ref_t);
+DEF_VARR (label_ref_t)
 
 struct target_ctx {
   unsigned char alloca_p, leaf_p, stack_param_p, switch_p;

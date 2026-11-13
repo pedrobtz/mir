@@ -79,7 +79,7 @@ struct insn_pattern_info {
 };
 
 typedef struct insn_pattern_info insn_pattern_info_t;
-DEF_VARR (insn_pattern_info_t);
+DEF_VARR (insn_pattern_info_t)
 
 enum branch_type { BRCOND, JUMP, LADDR, BCTR };
 struct label_ref {
@@ -93,7 +93,7 @@ struct label_ref {
 };
 
 typedef struct label_ref label_ref_t;
-DEF_VARR (label_ref_t);
+DEF_VARR (label_ref_t)
 
 struct target_ctx {
   unsigned char alloca_p, block_arg_func_p, leaf_p, switch_p, laddr_p, short_bb_branch_p;

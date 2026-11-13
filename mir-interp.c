@@ -70,7 +70,7 @@ typedef enum {
 } MIR_full_insn_code_t;
 #undef REP_SEP
 
-DEF_VARR (MIR_val_t);
+DEF_VARR (MIR_val_t)
 
 struct ff_interface {
   size_t arg_vars_num, nres, nargs;
@@ -80,9 +80,9 @@ struct ff_interface {
 };
 
 typedef struct ff_interface *ff_interface_t;
-DEF_HTAB (ff_interface_t);
+DEF_HTAB (ff_interface_t)
 
-DEF_VARR (_MIR_arg_desc_t);
+DEF_VARR (_MIR_arg_desc_t)
 
 struct interp_ctx {
 #if DIRECT_THREADED_DISPATCH
