@@ -724,7 +724,7 @@ struct insn_pattern_info {
 };
 
 typedef struct insn_pattern_info insn_pattern_info_t;
-DEF_VARR (insn_pattern_info_t);
+DEF_VARR (insn_pattern_info_t)
 
 enum branch_type { BRANCH, JAL, AUIPC, AUIPC_JALR };
 struct label_ref {
@@ -738,7 +738,7 @@ struct label_ref {
 };
 
 typedef struct label_ref label_ref_t;
-DEF_VARR (label_ref_t);
+DEF_VARR (label_ref_t)
 
 struct const_ref {
   uint64_t val;
@@ -746,7 +746,7 @@ struct const_ref {
 };
 
 typedef struct const_ref const_ref_t;
-DEF_VARR (const_ref_t);
+DEF_VARR (const_ref_t)
 
 struct target_ctx {
   unsigned char alloca_p, block_arg_func_p, leaf_p, add_nops;

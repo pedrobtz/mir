@@ -599,7 +599,7 @@ struct insn_pattern_info {
 
 typedef struct insn_pattern_info insn_pattern_info_t;
 
-DEF_VARR (insn_pattern_info_t);
+DEF_VARR (insn_pattern_info_t)
 
 struct const_ref {
   int call_p;            /* flag that constant from call insn */
@@ -610,7 +610,7 @@ struct const_ref {
 };
 
 typedef struct const_ref const_ref_t;
-DEF_VARR (const_ref_t);
+DEF_VARR (const_ref_t)
 
 struct label_ref {
   char abs_addr_p, short_p; /* 8 or 32-bit target */
@@ -622,7 +622,7 @@ struct label_ref {
 };
 
 typedef struct label_ref label_ref_t;
-DEF_VARR (label_ref_t);
+DEF_VARR (label_ref_t)
 
 #define MOVDQA_CODE 0
 
@@ -632,7 +632,7 @@ struct call_ref {
 };
 
 typedef struct call_ref call_ref_t;
-DEF_VARR (call_ref_t);
+DEF_VARR (call_ref_t)
 
 struct target_ctx {
   unsigned char alloca_p, block_arg_func_p, leaf_p, keep_fp_p;

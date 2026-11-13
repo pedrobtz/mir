@@ -163,25 +163,25 @@ struct ra_ctx;
 struct combine_ctx;
 
 typedef struct loop_node *loop_node_t;
-DEF_VARR (loop_node_t);
+DEF_VARR (loop_node_t)
 
 typedef struct dead_var *dead_var_t;
-DEF_DLIST_LINK (dead_var_t);
+DEF_DLIST_LINK (dead_var_t)
 
 struct dead_var {
   MIR_reg_t var;
   DLIST_LINK (dead_var_t) dead_var_link;
 };
-DEF_DLIST (dead_var_t, dead_var_link);
+DEF_DLIST (dead_var_t, dead_var_link)
 
 typedef struct bb_insn *bb_insn_t;
-DEF_VARR (bb_insn_t);
+DEF_VARR (bb_insn_t)
 
 typedef struct target_bb_version *target_bb_version_t;
-DEF_VARR (target_bb_version_t);
+DEF_VARR (target_bb_version_t)
 
 typedef void *void_ptr_t;
-DEF_VARR (void_ptr_t);
+DEF_VARR (void_ptr_t)
 
 typedef struct {
   unsigned char alloca_flag;
@@ -192,17 +192,17 @@ typedef struct {
   int64_t disp;                /* defined only when disp_def_p, otherwise disp is unknown */
 } mem_attr_t;
 
-DEF_VARR (mem_attr_t);
+DEF_VARR (mem_attr_t)
 
 typedef struct spot_attr {
   uint32_t spot, prop;
   MIR_op_t *mem_ref; /* ref for memory if the spot is memory, NULL otherwise */
 } spot_attr_t;
 
-DEF_VARR (spot_attr_t);
+DEF_VARR (spot_attr_t)
 
-DEF_VARR (MIR_op_t);
-DEF_VARR (MIR_insn_t);
+DEF_VARR (MIR_op_t)
+DEF_VARR (MIR_insn_t)
 
 struct gen_ctx {
   MIR_context_t ctx;
@@ -304,14 +304,14 @@ struct func_or_bb {
 };
 
 typedef struct func_or_bb func_or_bb_t;
-DEF_VARR (func_or_bb_t);
+DEF_VARR (func_or_bb_t)
 
 static inline gen_ctx_t *gen_ctx_loc (MIR_context_t ctx) { return (gen_ctx_t *) ctx; }
 
-DEF_VARR (int);
-DEF_VARR (uint8_t);
-DEF_VARR (uint64_t);
-DEF_VARR (MIR_code_reloc_t);
+DEF_VARR (int)
+DEF_VARR (uint8_t)
+DEF_VARR (uint64_t)
+DEF_VARR (MIR_code_reloc_t)
 
 #if defined(__x86_64__) || defined(_M_AMD64)
 #include "mir-gen-x86_64.c"
@@ -335,7 +335,7 @@ DEF_VARR (MIR_code_reloc_t);
 #endif
 
 typedef struct bb_stub *bb_stub_t;
-DEF_DLIST_LINK (bb_version_t);
+DEF_DLIST_LINK (bb_version_t)
 
 struct bb_version {
   bb_stub_t bb_stub;
@@ -349,7 +349,7 @@ struct bb_version {
 };
 
 /* Definition of double list of bb_version_t type elements */
-DEF_DLIST (bb_version_t, bb_version_link);
+DEF_DLIST (bb_version_t, bb_version_link)
 
 struct bb_stub {
   DLIST (bb_version_t) bb_versions;
@@ -385,11 +385,11 @@ static void *gen_malloc_and_mark_to_free (gen_ctx_t gen_ctx, size_t size) {
 
 typedef struct bb *bb_t;
 
-DEF_DLIST_LINK (bb_t);
+DEF_DLIST_LINK (bb_t)
 
 typedef struct insn_data *insn_data_t;
 
-DEF_DLIST_LINK (bb_insn_t);
+DEF_DLIST_LINK (bb_insn_t)
 
 typedef struct edge *edge_t;
 
@@ -397,8 +397,8 @@ typedef edge_t in_edge_t;
 
 typedef edge_t out_edge_t;
 
-DEF_DLIST_LINK (in_edge_t);
-DEF_DLIST_LINK (out_edge_t);
+DEF_DLIST_LINK (in_edge_t)
+DEF_DLIST_LINK (out_edge_t)
 
 struct edge {
   bb_t src, dst;
@@ -407,8 +407,8 @@ struct edge {
   unsigned char fall_through_p, back_edge_p, flag1, flag2;
 };
 
-DEF_DLIST (in_edge_t, in_link);
-DEF_DLIST (out_edge_t, out_link);
+DEF_DLIST (in_edge_t, in_link)
+DEF_DLIST (out_edge_t, out_link)
 
 struct insn_data { /* used only for calls/labels in -O0 mode */
   bb_t bb;
@@ -433,7 +433,7 @@ struct bb_insn {
   size_t label_disp;           /* for label */
 };
 
-DEF_DLIST (bb_insn_t, bb_insn_link);
+DEF_DLIST (bb_insn_t, bb_insn_link)
 
 struct bb {
   size_t index, pre, rpost, bfs; /* preorder, reverse post order, breadth first order */
@@ -452,9 +452,9 @@ struct bb {
   int max_int_pressure, max_fp_pressure;
 };
 
-DEF_DLIST (bb_t, bb_link);
+DEF_DLIST (bb_t, bb_link)
 
-DEF_DLIST_LINK (loop_node_t);
+DEF_DLIST_LINK (loop_node_t)
 DEF_DLIST_TYPE (loop_node_t);
 
 struct loop_node {
@@ -471,9 +471,9 @@ struct loop_node {
   int max_int_pressure, max_fp_pressure;
 };
 
-DEF_DLIST_CODE (loop_node_t, children_link);
+DEF_DLIST_CODE (loop_node_t, children_link)
 
-DEF_DLIST_LINK (func_cfg_t);
+DEF_DLIST_LINK (func_cfg_t)
 
 struct reg_info {
   long freq;
@@ -483,7 +483,7 @@ struct reg_info {
 
 typedef struct reg_info reg_info_t;
 
-DEF_VARR (reg_info_t);
+DEF_VARR (reg_info_t)
 
 typedef struct {
   int uns_p;
@@ -1920,7 +1920,7 @@ static int rpost_cmp (const void *a1, const void *a2) {
 
 static int post_cmp (const void *a1, const void *a2) { return -rpost_cmp (a1, a2); }
 
-DEF_VARR (bb_t);
+DEF_VARR (bb_t)
 
 struct data_flow_ctx {
   VARR (bb_t) * worklist, *pending;
@@ -2170,11 +2170,11 @@ typedef struct def_tab_el {
   MIR_reg_t reg; /* another key */
   bb_insn_t def;
 } def_tab_el_t;
-DEF_HTAB (def_tab_el_t);
+DEF_HTAB (def_tab_el_t)
 
-DEF_VARR (ssa_edge_t);
-DEF_VARR (size_t);
-DEF_VARR (char);
+DEF_VARR (ssa_edge_t)
+DEF_VARR (size_t)
+DEF_VARR (char)
 
 struct ssa_ctx {
   /* Different fake insns: defining undef, initial arg values. They are not in insn lists. */
@@ -3381,8 +3381,8 @@ typedef struct expr {
   MIR_reg_t temp_reg; /* 0 initially and reg used to remove redundant expr */
 } *expr_t;
 
-DEF_VARR (expr_t);
-DEF_HTAB (expr_t);
+DEF_VARR (expr_t)
+DEF_HTAB (expr_t)
 
 typedef struct mem_expr {
   MIR_insn_t insn;    /* load or store */
@@ -3391,8 +3391,8 @@ typedef struct mem_expr {
   struct mem_expr *next;
 } *mem_expr_t;
 
-DEF_VARR (mem_expr_t);
-DEF_HTAB (mem_expr_t);
+DEF_VARR (mem_expr_t)
+DEF_HTAB (mem_expr_t)
 
 struct insn_nop_pair {
   bb_insn_t bb_insn;
@@ -3400,7 +3400,7 @@ struct insn_nop_pair {
 };
 typedef struct insn_nop_pair insn_nop_pair_t;
 
-DEF_VARR (insn_nop_pair_t);
+DEF_VARR (insn_nop_pair_t)
 
 struct gvn_ctx {
   MIR_insn_t temp_mem_insn;
@@ -5954,8 +5954,8 @@ struct live_range {
   live_range_t next;
 };
 
-DEF_VARR (live_range_t);
-DEF_VARR (MIR_reg_t);
+DEF_VARR (live_range_t)
+DEF_VARR (MIR_reg_t)
 
 struct lr_ctx {
   int ssa_live_info_p;                    /* TRUE if found PHIs */
@@ -6809,7 +6809,7 @@ typedef struct mv {
   size_t freq;
 } mv_t;
 
-DEF_VARR (mv_t);
+DEF_VARR (mv_t)
 
 struct coalesce_ctx {
   VARR (mv_t) * moves;
@@ -7239,16 +7239,16 @@ typedef struct allocno_info {
   reg_info_t *reg_infos;
 } allocno_info_t;
 
-DEF_VARR (allocno_info_t);
+DEF_VARR (allocno_info_t)
 
 typedef struct spill_cache_el {
   uint32_t age;
   MIR_reg_t slot;
 } spill_cache_el_t;
 
-DEF_VARR (spill_cache_el_t);
+DEF_VARR (spill_cache_el_t)
 
-DEF_VARR (bitmap_t);
+DEF_VARR (bitmap_t)
 
 typedef struct lr_gap {
   int16_t hreg;    /* key, hard reg assigned to reg */
@@ -7257,8 +7257,8 @@ typedef struct lr_gap {
   live_range_t lr; /* the gap lr, lr->start is another key */
 } lr_gap_t;
 
-DEF_VARR (lr_gap_t);
-DEF_HTAB (lr_gap_t);
+DEF_VARR (lr_gap_t)
+DEF_HTAB (lr_gap_t)
 
 typedef struct spill_el {
   MIR_reg_t reg;
@@ -7269,7 +7269,7 @@ typedef struct spill_el {
   } u;
 } spill_el_t;
 
-DEF_VARR (spill_el_t);
+DEF_VARR (spill_el_t)
 
 typedef struct insn_reload {
   MIR_type_t type;
@@ -8665,7 +8665,7 @@ struct var_ref { /* We keep track of the last reg ref in this struct. */
 
 typedef struct var_ref var_ref_t;
 
-DEF_VARR (var_ref_t);
+DEF_VARR (var_ref_t)
 
 struct combine_ctx {
   VARR (size_t) * var_ref_ages;
