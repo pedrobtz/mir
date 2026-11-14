@@ -6626,19 +6626,29 @@ static void def_symbol (c2m_ctx_t c2m_ctx, enum symbol_mode mode, node_t id, nod
   assert (id->code == N_ID && scope != NULL);
   assert (scope->code == N_MODULE || scope->code == N_BLOCK || scope->code == N_STRUCT
           || scope->code == N_UNION || scope->code == N_FUNC || scope->code == N_FOR);
-  decl_spec = ((decl_t) def_node->attr)->decl_spec;
-  if (decl_spec.thread_local_p && !decl_spec.static_p && !decl_spec.extern_p)
-    error (c2m_ctx, POS (id), "auto %s is declared as thread local", id->u.s.s);
+  /* An enumeration constant's attr is not a decl: its decl_spec is read
+     only for a node that is not one. */
+  if (def_node->code != N_ENUM_CONST) {
+    decl_spec = ((decl_t) def_node->attr)->decl_spec;
+    if (decl_spec.thread_local_p && !decl_spec.static_p && !decl_spec.extern_p)
+      error (c2m_ctx, POS (id), "auto %s is declared as thread local", id->u.s.s);
+  }
   if (!symbol_find (c2m_ctx, mode, id, scope, &sym)) {
     symbol_insert (c2m_ctx, mode, id, scope, def_node, NULL);
     return;
   }
-  tab_decl_spec = ((decl_t) sym.def_node->attr)->decl_spec;
   if ((def_node->code == N_ENUM_CONST || sym.def_node->code == N_ENUM_CONST)
       && def_node->code != sym.def_node->code) {
     error (c2m_ctx, POS (id), "%s redeclared as a different kind of symbol", id->u.s.s);
     return;
-  } else if (linkage == N_IGNORE) {
+  }
+  if (def_node->code == N_ENUM_CONST) { /* and so is the previous one */
+    error (c2m_ctx, POS (id), "%s redeclaration", id->u.s.s);
+    return;
+  }
+  decl_spec = ((decl_t) def_node->attr)->decl_spec;
+  tab_decl_spec = ((decl_t) sym.def_node->attr)->decl_spec;
+  if (linkage == N_IGNORE) {
     if (!decl_spec.typedef_p || !tab_decl_spec.typedef_p
         || !type_eq_p (decl_spec.type, tab_decl_spec.type))
 #if defined(__APPLE__)
