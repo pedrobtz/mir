@@ -6452,6 +6452,23 @@ static void cast_value (struct expr *to_e, struct expr *from_e, struct type *to)
 #undef BASIC_TO_CONV
 }
 
+/* Constant shifts, folded without undefined behaviour in c2mir itself: a
+   negative value is shifted left as unsigned, and a count that is negative
+   or not less than 64 (undefined in the source being compiled) gives 0, or
+   the sign for a signed right shift. */
+static mir_llong fold_shl_i (mir_llong v, mir_ullong count) {
+  return count >= 64 ? 0 : (mir_llong) ((mir_ullong) v << count);
+}
+static mir_llong fold_shr_i (mir_llong v, mir_ullong count) {
+  return count >= 64 ? (v < 0 ? -1 : 0) : v >> count;
+}
+static mir_ullong fold_shl_u (mir_ullong v, mir_ullong count) {
+  return count >= 64 ? 0 : v << count;
+}
+static mir_ullong fold_shr_u (mir_ullong v, mir_ullong count) {
+  return count >= 64 ? 0 : v >> count;
+}
+
 static void convert_value (struct expr *e, struct type *to) { cast_value (e, e, to); }
 
 static int non_reg_decl_spec_p (struct decl_spec *ds) {
@@ -8152,16 +8169,15 @@ static struct expr *check_assign_op (c2m_ctx_t c2m_ctx, node_t r, struct expr *e
         convert_value (e1, &t);
         convert_value (e2, &rt);
         e->const_p = TRUE;
-        if (signed_integer_type_p (&t)) {
-          if (signed_integer_type_p (&rt))
-            e->c.i_val = r->code == N_LSH ? e1->c.i_val << e2->c.i_val : e1->c.i_val >> e2->c.i_val;
-          else
-            e->c.i_val = r->code == N_LSH ? e1->c.i_val << e2->c.u_val : e1->c.i_val >> e2->c.u_val;
-        } else if (signed_integer_type_p (&rt)) {
-          e->c.u_val = r->code == N_LSH ? e1->c.u_val << e2->c.i_val : e1->c.u_val >> e2->c.i_val;
-        } else {
-          e->c.u_val = r->code == N_LSH ? e1->c.u_val << e2->c.u_val : e1->c.u_val >> e2->c.u_val;
-        }
+        /* The count as unsigned: a negative one becomes too large. */
+        mir_ullong count
+          = signed_integer_type_p (&rt) ? (mir_ullong) e2->c.i_val : e2->c.u_val;
+        if (signed_integer_type_p (&t))
+          e->c.i_val = r->code == N_LSH ? fold_shl_i (e1->c.i_val, count)
+                                        : fold_shr_i (e1->c.i_val, count);
+        else
+          e->c.u_val = r->code == N_LSH ? fold_shl_u (e1->c.u_val, count)
+                                        : fold_shr_u (e1->c.u_val, count);
       }
     }
     break;
