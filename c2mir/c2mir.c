@@ -7526,7 +7526,6 @@ static int update_path_and_do (c2m_ctx_t c2m_ctx, int go_inside_p,
 
 static int check_const_addr_p (c2m_ctx_t c2m_ctx, node_t r, node_t *base, mir_llong *offset,
                                int *deref) {
-  check_ctx_t check_ctx = c2m_ctx->check_ctx;
   struct expr *e = r->attr;
   struct type *type;
   node_t op1, op2, temp;
