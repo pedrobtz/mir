@@ -59,7 +59,7 @@ typedef enum {
   C_invalid_char,
 } C_error_code_t;
 
-DEF_VARR (char);
+DEF_VARR (char)
 
 typedef struct pos {
   const char *fname;
@@ -81,13 +81,13 @@ typedef struct stream {
   int ifs_length_at_stream_start; /* length of ifs at the stream start */
 } *stream_t;
 
-DEF_VARR (stream_t);
+DEF_VARR (stream_t)
 
 typedef const char *char_ptr_t;
-DEF_VARR (char_ptr_t);
+DEF_VARR (char_ptr_t)
 
 typedef void *void_ptr_t;
-DEF_VARR (void_ptr_t);
+DEF_VARR (void_ptr_t)
 
 typedef struct {
   const char *s;
@@ -99,16 +99,16 @@ typedef struct {
   size_t key, flags;
 } tab_str_t;
 
-DEF_HTAB (tab_str_t);
+DEF_HTAB (tab_str_t)
 
 typedef struct token *token_t;
-DEF_VARR (token_t);
+DEF_VARR (token_t)
 
 typedef struct node *node_t;
 
 enum symbol_mode { S_REGULAR, S_TAG, S_LABEL };
 
-DEF_VARR (node_t);
+DEF_VARR (node_t)
 
 typedef struct {
   enum symbol_mode mode;
@@ -118,7 +118,7 @@ typedef struct {
   VARR (node_t) * defs;
 } symbol_t;
 
-DEF_HTAB (symbol_t);
+DEF_HTAB (symbol_t)
 
 struct init_object {
   struct type *container_type;
@@ -130,14 +130,14 @@ struct init_object {
 };
 
 typedef struct init_object init_object_t;
-DEF_VARR (init_object_t);
+DEF_VARR (init_object_t)
 
 typedef struct pre_ctx *pre_ctx_t;
 typedef struct parse_ctx *parse_ctx_t;
 typedef struct check_ctx *check_ctx_t;
 typedef struct gen_ctx *gen_ctx_t;
 
-DEF_VARR (pos_t);
+DEF_VARR (pos_t)
 
 struct c2m_ctx {
   MIR_context_t ctx;
@@ -609,7 +609,7 @@ typedef enum {
 
 #undef REP_SEP
 
-DEF_DLIST_LINK (node_t);
+DEF_DLIST_LINK (node_t)
 DEF_DLIST_TYPE (node_t);
 
 struct node {
@@ -642,7 +642,7 @@ static void set_node_pos (c2m_ctx_t c2m_ctx, node_t n, pos_t pos) {
   VARR_SET (pos_t, node_positions, n->uid, pos);
 }
 
-DEF_DLIST_CODE (node_t, op_link);
+DEF_DLIST_CODE (node_t, op_link)
 
 struct token {
   int code : 16; /* token_code_t and EOF */
@@ -1976,19 +1976,19 @@ typedef struct macro {          /* macro definition: */
   int ignore_p;
 } *macro_t;
 
-DEF_VARR (macro_t);
-DEF_HTAB (macro_t);
+DEF_VARR (macro_t)
+DEF_HTAB (macro_t)
 
 typedef struct ifstate {
   int skip_p, true_p, else_p; /* ??? flags that we are in a else part and in a false part */
   pos_t if_pos;               /* pos for #if and last #else, #elif */
 } *ifstate_t;
 
-DEF_VARR (ifstate_t);
+DEF_VARR (ifstate_t)
 
 typedef VARR (token_t) * token_arr_t;
 
-DEF_VARR (token_arr_t);
+DEF_VARR (token_arr_t)
 
 typedef struct macro_call {
   macro_t macro;
@@ -1999,7 +1999,7 @@ typedef struct macro_call {
   VARR (token_t) * repl_buffer; /* LIST:(token nodes)* */
 } *macro_call_t;
 
-DEF_VARR (macro_call_t);
+DEF_VARR (macro_call_t)
 
 struct pre_ctx {
   VARR (char_ptr_t) * once_include_files;
@@ -3922,7 +3922,7 @@ typedef struct {
   int typedef_p;
 } tpname_t;
 
-DEF_HTAB (tpname_t);
+DEF_HTAB (tpname_t)
 
 struct parse_ctx {
   int record_level;
@@ -5564,10 +5564,10 @@ static void parse_finish (c2m_ctx_t c2m_ctx) {
 */
 
 typedef struct decl *decl_t;
-DEF_VARR (decl_t);
+DEF_VARR (decl_t)
 
 typedef struct case_attr *case_t;
-DEF_HTAB (case_t);
+DEF_HTAB (case_t)
 
 #undef curr_scope
 
@@ -6036,14 +6036,14 @@ static struct type *create_type (c2m_ctx_t c2m_ctx, struct type *copy) {
   return res;
 }
 
-DEF_DLIST_LINK (case_t);
+DEF_DLIST_LINK (case_t)
 
 struct case_attr {
   node_t case_node, case_target_node;
   DLIST_LINK (case_t) case_link;
 };
 
-DEF_DLIST (case_t, case_link);
+DEF_DLIST (case_t, case_link)
 
 struct switch_attr {
   struct type type; /* integer promoted type */
@@ -10182,9 +10182,9 @@ struct reg_var {
 
 typedef struct reg_var reg_var_t;
 
-DEF_HTAB (reg_var_t);
-DEF_VARR (int);
-DEF_VARR (MIR_type_t);
+DEF_HTAB (reg_var_t)
+DEF_VARR (int)
+DEF_VARR (MIR_type_t)
 
 struct init_el {
   c2m_ctx_t c2m_ctx; /* for sorting */
@@ -10195,11 +10195,11 @@ struct init_el {
 };
 
 typedef struct init_el init_el_t;
-DEF_VARR (init_el_t);
+DEF_VARR (init_el_t)
 
-DEF_VARR (MIR_op_t);
-DEF_VARR (case_t);
-DEF_HTAB (MIR_item_t);
+DEF_VARR (MIR_op_t)
+DEF_VARR (case_t)
+DEF_HTAB (MIR_item_t)
 
 struct gen_ctx {
   op_t zero_op, one_op, minus_one_op;
