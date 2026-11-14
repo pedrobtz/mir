@@ -2227,6 +2227,12 @@ static void add_include_stream (c2m_ctx_t c2m_ctx, const char *fname, const char
   for (size_t i = 0; i < VARR_LENGTH (char_ptr_t, once_include_files); i++)
     if (strcmp (fname, VARR_GET (char_ptr_t, once_include_files, i)) == 0) return;
   assert (fname != NULL);
+#ifdef C2MIR_NO_FILE_INCLUDES
+  if (content == NULL) {
+    error (c2m_ctx, err_pos, "no header %s: headers are not read from files here", fname);
+    longjmp (c2m_ctx->env, 1);
+  }
+#endif
   if (content == NULL && (f = fopen (fname, "rb")) == NULL) {
     if (c2m_options->message_file != NULL)
       error (c2m_ctx, err_pos, "error in opening file %s", fname);
@@ -2479,11 +2485,40 @@ static const char *get_full_name (c2m_ctx_t c2m_ctx, const char *base, const cha
   return VARR_ADDR (char, temp_string);
 }
 
+/* An embedder can give headers in memory, found before the standard ones:
+     #define C2MIR_EXTRA_INCLUDES {"math.h", math_h_text}, {"string.h", ...},
+   and can forbid reading any header from a file, so that a source compiles
+   the same on every machine whatever headers it has:
+     #define C2MIR_NO_FILE_INCLUDES 1
+   Then only the extra and the standard headers are found; any other is an
+   error, and __has_include is true only for them. */
+#ifdef C2MIR_EXTRA_INCLUDES
+static string_include_t extra_includes[] = {C2MIR_EXTRA_INCLUDES};
+#endif
+
 static const char *get_include_fname (c2m_ctx_t c2m_ctx, token_t t, const char **content) {
   const char *fullname, *name;
 
   *content = NULL;
   assert (t->code == T_STR || t->code == T_HEADER);
+#ifdef C2MIR_EXTRA_INCLUDES
+  name = t->node->u.s.s;
+  for (size_t i = 0; i < sizeof (extra_includes) / sizeof (string_include_t); i++)
+    if (extra_includes[i].name != NULL && strcmp (name, extra_includes[i].name) == 0) {
+      *content = extra_includes[i].content;
+      return name;
+    }
+#endif
+#ifdef C2MIR_NO_FILE_INCLUDES
+  name = t->node->u.s.s;
+  for (size_t i = 0; i < sizeof (standard_includes) / sizeof (string_include_t); i++)
+    if (standard_includes[i].name != NULL && strcmp (name, standard_includes[i].name) == 0) {
+      *content = standard_includes[i].content;
+      return name;
+    }
+  (void) fullname;
+  return name;
+#endif
   if ((name = t->node->u.s.s)[0] != '/') {
     if (t->repr[0] == '"') {
       /* Search relative to the current source dir */
@@ -3718,7 +3753,12 @@ static void processing (c2m_ctx_t c2m_ctx, int ignore_directive_p) {
           } else {
             arg = VARR_LAST (token_arr_t, mc->args);
             if ((name = get_header_name (c2m_ctx, arg, t->pos, &content)) != NULL) {
+#ifdef C2MIR_NO_FILE_INCLUDES
+              res = content != NULL;
+              (void) f;
+#else
               res = content != NULL || ((f = fopen (name, "r")) != NULL && !fclose (f)) ? 1 : 0;
+#endif
             } else {
               error (c2m_ctx, t->pos, "wrong arg of predefined __has_include");
               res = 0;
