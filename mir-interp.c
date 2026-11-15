@@ -1856,11 +1856,12 @@ static void call (MIR_context_t ctx, MIR_val_t *bp, MIR_op_t *insn_arg_ops, code
     arg_vars_num = VARR_LENGTH (MIR_var_t, proto->args);
   }
   nres = proto->nres;
-  if (VARR_EXPAND (MIR_val_t, call_res_args_varr, nargs + nres)
-      || VARR_EXPAND (_MIR_arg_desc_t, call_arg_descs_varr, nargs)) {
+  /* Grow each array on its own: with ||, a call that grew the first never
+     grew the second, and more than its 64 initial descriptors overflowed it. */
+  if (VARR_EXPAND (MIR_val_t, call_res_args_varr, nargs + nres))
     call_res_args = VARR_ADDR (MIR_val_t, call_res_args_varr);
+  if (VARR_EXPAND (_MIR_arg_desc_t, call_arg_descs_varr, nargs))
     call_arg_descs = VARR_ADDR (_MIR_arg_desc_t, call_arg_descs_varr);
-  }
   if ((ff_interface_addr = ffi_address_ptr->a) == NULL) {
     for (i = 0; i < nargs; i++) {
       if (i < arg_vars_num) {
