@@ -12893,12 +12893,17 @@ static op_t gen (c2m_ctx_t c2m_ctx, node_t r, MIR_label_t true_label, MIR_label_
        return v.ival;` read the stale ival at -O2 (GVN saw two non-conflicting
        classes) -- issue #473. */
     struct type *anon_union_type = enclosing_anon_union_type (decl);
+    /* A narrow bit-field's expression has its promoted type (int), but its
+       storage is the member's type: an unsigned long long : 31 member read
+       with int's class let DSE drop the store an initializer made with the
+       member's class, and the read saw garbage at -O2. */
+    struct type *member_type = decl->bit_offset >= 0 ? decl->decl_spec.type : e->type;
     if (r->code == N_FIELD) {
       assert (op1.mir_op.mode == MIR_OP_MEM);
       alias = (op1.mir_op.u.mem.alias != 0 && MIR_alias_name (ctx, op1.mir_op.u.mem.alias)[0] == 'U'
                  ? op1.mir_op.u.mem.alias
                : anon_union_type != NULL ? get_type_alias (c2m_ctx, anon_union_type)
-                                         : get_type_alias (c2m_ctx, e->type));
+                                         : get_type_alias (c2m_ctx, member_type));
       op1.mir_op
         = MIR_new_alias_mem_op (ctx, t, op1.mir_op.u.mem.disp + decl->offset, op1.mir_op.u.mem.base,
                                 op1.mir_op.u.mem.index, op1.mir_op.u.mem.scale, alias,
@@ -12913,7 +12918,7 @@ static op_t gen (c2m_ctx_t c2m_ctx, node_t r, MIR_label_t true_label, MIR_label_
                                 get_type_alias (c2m_ctx, left->type->u.ptr_type->mode == TM_UNION
                                                            ? left->type->u.ptr_type
                                                          : anon_union_type != NULL ? anon_union_type
-                                                                                   : e->type),
+                                                                                   : member_type),
                                 decl->decl_spec.type->antialias);
     }
     res = new_op (decl, op1.mir_op);
