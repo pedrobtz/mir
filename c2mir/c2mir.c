@@ -3508,6 +3508,36 @@ static int eval_binop_operands (c2m_ctx_t c2m_ctx, node_t tree, struct val *v1, 
   return v1->uns_p;
 }
 
+/* Whether a preprocessor expression has an unsigned type, found from its
+   form without evaluating it, so an arm ?: does not take reports no error. */
+static int pp_unsigned_p (node_t tree) {
+  switch (tree->code) {
+  case N_U:
+  case N_UL:
+  case N_ULL:
+  case N_CH16:
+  case N_CH32: return TRUE;
+  case N_CH: return !char_is_signed_p () || MIR_CHAR_MAX > MIR_INT_MAX;
+  case N_BITWISE_NOT:
+  case N_ADD:
+  case N_SUB:
+    if (NL_EL (tree->u.ops, 1) == NULL) return pp_unsigned_p (NL_HEAD (tree->u.ops));
+    /* falls through */
+  case N_AND:
+  case N_OR:
+  case N_XOR:
+  case N_MUL:
+  case N_DIV:
+  case N_MOD:
+    return pp_unsigned_p (NL_HEAD (tree->u.ops)) || pp_unsigned_p (NL_EL (tree->u.ops, 1));
+  case N_LSH:
+  case N_RSH: return pp_unsigned_p (NL_HEAD (tree->u.ops));
+  case N_COND:
+    return pp_unsigned_p (NL_EL (tree->u.ops, 1)) || pp_unsigned_p (NL_EL (tree->u.ops, 2));
+  default: return FALSE; /* comparisons, !, &&, || and signed constants are int */
+  }
+}
+
 static struct val eval (c2m_ctx_t c2m_ctx, node_t tree) {
   int cond;
   struct val res, v1, v2;
@@ -3629,6 +3659,9 @@ static struct val eval (c2m_ctx_t c2m_ctx, node_t tree) {
     v1 = eval (c2m_ctx, NL_HEAD (tree->u.ops));
     cond = v1.uns_p ? v1.u.u_val != 0 : v1.u.i_val != 0;
     res = eval (c2m_ctx, NL_EL (tree->u.ops, cond ? 1 : 2));
+    /* The usual arithmetic conversions apply to both arms (C11 6.5.15):
+       (1 ? -1 : 0u) is unsigned. */
+    if (!res.uns_p && pp_unsigned_p (NL_EL (tree->u.ops, cond ? 2 : 1))) res.uns_p = TRUE;
     break;
   default:
     res.uns_p = FALSE;
@@ -9528,8 +9561,7 @@ static void check (c2m_ctx_t c2m_ctx, node_t r, node_t context) {
     op1 = NL_HEAD (r->u.ops);
     check (c2m_ctx, op1, r);
     e1 = op1->attr;
-    t = *e1->type;
-    if (integer_type_p (&t)) t = integer_promotion (&t);
+    t = *e1->type; /* lvalue conversion only, no integer promotion (C11 6.5.1.1) */
     list = NL_NEXT (op1);
     for (ga = NL_HEAD (list->u.ops); ga != NULL; ga = NL_NEXT (ga)) {
       assert (ga->code == N_GENERIC_ASSOC);
