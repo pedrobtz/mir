@@ -8658,13 +8658,11 @@ static void check (c2m_ctx_t c2m_ctx, node_t r, node_t context) {
     e->const_p = TRUE;
     e->c.d_val = r->u.ld;
     break;
-  case N_CH:
-    e = create_basic_type_expr (c2m_ctx, r, TP_CHAR);
+  case N_CH: /* an int, with the value of a char (C11 6.4.4.4): sizeof ('a') is sizeof (int) */
+    e = create_basic_type_expr (c2m_ctx, r, TP_INT);
     e->const_p = TRUE;
-    if (char_is_signed_p ())
-      e->c.i_val = r->u.ch;
-    else
-      e->c.u_val = r->u.ch;
+    e->c.i_val = char_is_signed_p () ? (mir_llong) (signed char) r->u.ch
+                                     : (mir_llong) (unsigned char) r->u.ch;
     break;
   case N_CH16:
   case N_CH32:
@@ -8689,7 +8687,8 @@ static void check (c2m_ctx_t c2m_ctx, node_t r, node_t context) {
     arr_type->el_type->pos_node = r;
     arr_type->el_type->mode = TM_BASIC;
     arr_type->el_type->u.basic_type = size == 1 ? TP_CHAR : get_uint_basic_type (size);
-    arr_type->size = new_i_node (c2m_ctx, (long) r->u.s.len, POS (r));
+    /* len counts bytes: the array has len / size elements */
+    arr_type->size = new_i_node (c2m_ctx, (long) (r->u.s.len / size), POS (r));
     check (c2m_ctx, arr_type->size, NULL);
     break;
   }
