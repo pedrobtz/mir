@@ -10641,6 +10641,32 @@ static void emit2_noopt (c2m_ctx_t c2m_ctx, MIR_insn_code_t code, MIR_op_t op1, 
   emit_insn (c2m_ctx, MIR_new_insn (c2m_ctx->ctx, code, op1, op2));
 }
 
+/* A floating value to unsigned 64 bits. MIR's conversions are signed, so
+   F2I/D2I/LD2I alone turned every value from 2^63 up into 2^63: below 2^63
+   convert directly; otherwise convert x - 2^63 and set the top bit. */
+static op_t float_to_u64 (c2m_ctx_t c2m_ctx, op_t op, MIR_insn_code_t conv) {
+  MIR_context_t ctx = c2m_ctx->ctx;
+  MIR_label_t small_label = MIR_new_label (ctx), end_label = MIR_new_label (ctx);
+  MIR_insn_code_t blt = conv == MIR_F2I ? MIR_FBLT : conv == MIR_D2I ? MIR_DBLT : MIR_LDBLT;
+  MIR_insn_code_t sub = conv == MIR_F2I ? MIR_FSUB : conv == MIR_D2I ? MIR_DSUB : MIR_LDSUB;
+  MIR_type_t ft = conv == MIR_F2I ? MIR_T_F : conv == MIR_D2I ? MIR_T_D : MIR_T_LD;
+  MIR_op_t two63 = conv == MIR_F2I   ? MIR_new_float_op (ctx, 9223372036854775808.0f)
+                   : conv == MIR_D2I ? MIR_new_double_op (ctx, 9223372036854775808.0)
+                                     : MIR_new_ldouble_op (ctx, 9223372036854775808.0L);
+  op_t res = get_new_temp (c2m_ctx, MIR_T_U64), diff = get_new_temp (c2m_ctx, ft);
+
+  emit3 (c2m_ctx, blt, MIR_new_label_op (ctx, small_label), op.mir_op, two63);
+  emit3 (c2m_ctx, sub, diff.mir_op, op.mir_op, two63);
+  emit2 (c2m_ctx, conv, res.mir_op, diff.mir_op);
+  emit3 (c2m_ctx, MIR_XOR, res.mir_op, res.mir_op,
+         MIR_new_uint_op (ctx, (uint64_t) 1 << 63));
+  emit1 (c2m_ctx, MIR_JMP, MIR_new_label_op (ctx, end_label));
+  emit_label_insn_opt (c2m_ctx, small_label);
+  emit2 (c2m_ctx, conv, res.mir_op, op.mir_op);
+  emit_label_insn_opt (c2m_ctx, end_label);
+  return res;
+}
+
 static op_t cast (c2m_ctx_t c2m_ctx, op_t op, MIR_type_t t, int new_op_p) {
   op_t res, interm;
   MIR_type_t op_type;
@@ -10799,6 +10825,8 @@ static op_t cast (c2m_ctx_t c2m_ctx, op_t op, MIR_type_t t, int new_op_p) {
     break;
   default: break;
   }
+  if (t == MIR_T_U64 && (insn_code == MIR_F2I || insn_code == MIR_D2I || insn_code == MIR_LD2I))
+    return float_to_u64 (c2m_ctx, op, insn_code);
   if (!new_op_p && insn_code == MIR_INSN_BOUND && insn_code2 == MIR_INSN_BOUND) return op;
   res = get_new_temp (c2m_ctx, t == MIR_T_I8 || t == MIR_T_U8 || t == MIR_T_I16 || t == MIR_T_U16
                                  ? MIR_T_I64
