@@ -8189,8 +8189,9 @@ static struct expr *check_assign_op (c2m_ctx_t c2m_ctx, node_t r, struct expr *e
         convert_value (e2, &t);
         if (floating_type_p (&t))
           e->c.d_val = (add_p ? e1->c.d_val + e2->c.d_val : e1->c.d_val - e2->c.d_val);
-        else if (signed_integer_type_p (&t))
-          e->c.i_val = (add_p ? e1->c.i_val + e2->c.i_val : e1->c.i_val - e2->c.i_val);
+        else if (signed_integer_type_p (&t)) /* wrapping, as MIR computes, without UB */
+          e->c.i_val = (mir_llong) (add_p ? (mir_ullong) e1->c.i_val + (mir_ullong) e2->c.i_val
+                                          : (mir_ullong) e1->c.i_val - (mir_ullong) e2->c.i_val);
         else
           e->c.u_val = (add_p ? e1->c.u_val + e2->c.u_val : e1->c.u_val - e2->c.u_val);
       }
